@@ -2,6 +2,7 @@ package com.example.library.model;
 
 import com.example.library.validation.DefaultMessages;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -10,11 +11,11 @@ import java.time.LocalDate;
 @Getter
 public class BookUpdateRequest {
 
-    @NotNull(message = DefaultMessages.BOOK_TITLE)
+    @NotBlank(message = DefaultMessages.BOOK_TITLE)
     @Schema(description = "Название книги")
     private String title;
 
-    @NotNull(message = DefaultMessages.BOOK_AUTHOR)
+    @NotBlank(message = DefaultMessages.BOOK_AUTHOR)
     @Schema(description = "Автор книги")
     private String author;
 

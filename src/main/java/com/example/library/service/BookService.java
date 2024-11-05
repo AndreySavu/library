@@ -2,6 +2,7 @@ package com.example.library.service;
 
 import com.example.library.exception.ResourceNotFoundException;
 import com.example.library.model.Book;
+import com.example.library.model.BookCreationRequest;
 import com.example.library.model.BookUpdateRequest;
 import com.example.library.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,10 @@ public class BookService {
     @Autowired
     BookRepository bookRepository;
 
-    public Book createBook(BookCreationRequest book){
+    public Book createBook(BookCreationRequest bookCreationRequest) {
+        Book book = new Book(bookCreationRequest.getTitle(),
+                bookCreationRequest.getAuthor(),
+                bookCreationRequest.getPublishedDate());
         return bookRepository.save(book);
     }
 

@@ -1,12 +1,14 @@
 package com.example.library.controller;
 
 import com.example.library.model.Book;
+import com.example.library.model.BookCreationRequest;
 import com.example.library.model.BookUpdateRequest;
 import com.example.library.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -29,13 +31,15 @@ public class BookController {
 
     }
 
-    @Operation(summary = "3. Добавление новой книги")
+    @Operation(summary = "3. Добавление новой книги",
+            description = "Формал даты yyyy-mm-dd")
     @PostMapping
-    public Book createBook(@Valid @RequestBody BookCreationRequest book) {
-        return bookService.createBook(book);
+    public Book createBook(@Valid @RequestBody BookCreationRequest bookCreationRequest) {
+        return bookService.createBook(bookCreationRequest);
     }
 
-    @Operation(summary = "4. Обновление информации о книге.")
+    @Operation(summary = "4. Обновление информации о книге.",
+            description = "Формал даты yyyy-mm-dd")
     @PutMapping("/{id}")
     public Book updateBook(@PathVariable long id, @Valid @RequestBody BookUpdateRequest bookUpdateRequest) {
         return bookService.updateBook(id, bookUpdateRequest);
