@@ -35,18 +35,36 @@
 
 2. **RabbitMQ**:
 
+   Сервис RabbitMQ запускается в docker-контейнере с дефолной конфигурацией.
+   ```yml
+       version: '3'
+    services:
+      localRabbitMQ:
+        image: rabbitmq:3-management-alpine
+        environment:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        ports:
+          - 5672:5672
+          - 15672:15672
+   ```
+
 
 ## Инструкция по запуску
 
 Для запуска приложения выполните следующие шаги:
 
-1. Убедитесь, что у вас установлен Java 17 и Maven.
+1. Убедитесь, что у вас установлены Java 17, Maven и Docker.
 2. Склонируйте репозиторий на свою локальную машину:
    ```.bash
    git clone https://github.com/AndreySavu/library.git
    cd library
    ```
-3. Создайте экземпляр базы данных PostgreSQL 'library' на порту 5432, логин и пароль: library_user.
+3. Запустите docker-compose.yml
+   ```.bash
+    docker-compose up
+   ```
+4. Создайте экземпляр базы данных PostgreSQL 'library' на порту 5432, логин и пароль: library_user.
    Или настройте подключения к базе данных в файле `application.properties`, используя следующие параметры:
    
  ```
@@ -55,7 +73,7 @@
    spring.datasource.password=your_password
  ```
    
-4. Запустите приложение с помощью Maven:
+5. Запустите приложение с помощью Maven:
    
 ```.bash
    mvn spring-boot:run
