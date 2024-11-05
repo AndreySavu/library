@@ -3,48 +3,51 @@ package com.example.library.service;
 import com.example.library.exception.ResourceNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.model.BookCreationRequest;
+import com.example.library.model.BookMessage;
 import com.example.library.model.BookUpdateRequest;
 import com.example.library.repository.BookRepository;
+import lombok.Setter;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Setter
 @Service
 public class BookService {
 
+    @Value("${queue.name}")
+    private String queueName;
+
     @Autowired
-    BookRepository bookRepository;
+    private AmqpTemplate amqpTemplate;
+
+    @Autowired
+    private BookRepository bookRepository;
 
     public Book createBook(BookCreationRequest bookCreationRequest) {
-        Book book = new Book(bookCreationRequest.getTitle(),
-                bookCreationRequest.getAuthor(),
-                bookCreationRequest.getPublishedDate());
-        return bookRepository.save(book);
+        BookMessage bookMessage = new BookMessage("CREATE", null, bookCreationRequest);
+        return (Book) amqpTemplate.convertSendAndReceive(queueName, bookMessage);
     }
 
-    public List<Book> getBooks(){
+    public List<Book> getBooks() {
         return bookRepository.findAll();
     }
 
-    public Book getBookById(long id){
+    public Book getBookById(long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена"));
     }
 
-    public Book updateBook(long id, BookUpdateRequest bookDetails){
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена"));
-        book.setTitle(bookDetails.getTitle());
-        book.setAuthor(bookDetails.getAuthor());
-        book.setPublishedDate(bookDetails.getPublishedDate());
-        return bookRepository.save(book);
+    public Book updateBook(long id, BookUpdateRequest bookUpdateRequest) {
+        BookMessage bookMessage = new BookMessage("UPDATE", id, bookUpdateRequest);
+        return (Book) amqpTemplate.convertSendAndReceive(queueName, bookMessage);
     }
 
-    public void deleteBook(long id){
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Книга не найдена"));
-        bookRepository.delete(book);
+    public void deleteBook(long id) {
+        amqpTemplate.convertAndSend(queueName, new BookMessage("DELETE", id, null));
     }
 
 }
